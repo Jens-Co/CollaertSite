@@ -4,6 +4,6 @@ import tailwindcss from "@tailwindcss/vite";
 
 
 export default defineConfig({
-  base: '/',
+  base: '/CollaertSite/',
   plugins: [react(), tailwindcss()],
 })
