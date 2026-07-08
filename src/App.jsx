@@ -1,312 +1,574 @@
 import { useState, useEffect } from 'react';
 import './App.css';
 
+const business = {
+  name: 'Jens Collaert IT Services',
+  shortName: 'Jens Collaert',
+  address: 'Statiestraat 26, 1570 Pajottegem, België',
+  kbo: '1025.363.838',
+  phone: '+32 472 45 25 11',
+  email: 'jenscollaert@hotmail.com',
+};
+
+const socials = [
+  { name: 'GitHub', url: 'https://github.com/MCCORG', icon: 'fab fa-github' },
+  { name: 'LinkedIn', url: 'https://be.linkedin.com/in/jens-collaert-a02525137', icon: 'fab fa-linkedin-in' },
+  { name: 'E-mail', url: `mailto:${business.email}`, icon: 'fas fa-envelope' },
+];
+
+const mcc = {
+  url: 'https://mccompanion.net',
+  features: [
+    { icon: 'fas fa-magnifying-glass', title: 'Player Lookup', text: 'Look up any player’s profile and details in seconds.' },
+    { icon: 'fas fa-palette', title: 'Skin Workshop', text: 'Browse, edit and apply Minecraft skins with a built-in editor.' },
+    { icon: 'fas fa-box-open', title: 'Resource Pack Editor', text: 'Create and fine-tune resource packs on the go.' },
+    { icon: 'fas fa-chart-line', title: 'Server Metrics', text: 'Live dashboards to keep an eye on your server.' },
+    { icon: 'fas fa-terminal', title: 'Console Connector', text: 'Connect to and manage your server console remotely.' },
+    { icon: 'fas fa-language', title: '16 Languages', text: 'Fully localized for a worldwide community.' },
+  ],
+  platforms: [
+    { name: 'Windows', icon: 'fab fa-windows' },
+    { name: 'macOS', icon: 'fab fa-apple' },
+    { name: 'iOS', icon: 'fab fa-app-store-ios' },
+    { name: 'Android', icon: 'fab fa-google-play' },
+  ],
+};
+
+const brickBreak = {
+  name: 'Brick Break Swipe',
+  tagline: 'Draw a line. Bounce the ball. Break every brick.',
+  description:
+    'A fresh take on the brick breaker: swipe to draw lines that steer the ball, chain combos into Fever, grab power-ups and clear the board. Built from scratch in Flutter with the Flame engine.',
+  status: 'In development',
+  platforms: [
+    { name: 'iOS', icon: 'fab fa-app-store-ios' },
+    { name: 'Android', icon: 'fab fa-google-play' },
+  ],
+  stats: [
+    { value: '100', label: 'Handcrafted levels' },
+    { value: '6', label: 'Power-ups' },
+    { value: '3', label: 'Game modes' },
+  ],
+  features: [
+    { icon: 'fas fa-pen-nib', title: 'Draw to play', text: 'Swipe to draw lines and bounce the ball exactly where you want it.' },
+    { icon: 'fas fa-layer-group', title: '100 levels', text: 'Hand-designed levels with stars and unlock progression.' },
+    { icon: 'fas fa-bolt', title: 'Rush & Daily', text: 'Endless survival plus a daily seeded run everyone shares.' },
+    { icon: 'fas fa-wand-magic-sparkles', title: 'Power-ups & combos', text: 'Multiball, Fireball, Slow-mo, Nuke and Fever streaks.' },
+    { icon: 'fas fa-trophy', title: 'Leaderboards & friends', text: 'Chase high scores and add friends with friend codes.' },
+    { icon: 'fas fa-cloud', title: 'Play anywhere', text: 'Fully offline by default, with Sign in with Apple to sync across devices.' },
+  ],
+  skins: [
+    { name: 'Classic', color: '#e2e8f0' },
+    { name: 'Comet', color: '#4de1ff' },
+    { name: 'Ghost', color: '#b18cff' },
+    { name: 'Void', color: '#0f172a' },
+    { name: 'Star', color: '#ffd166' },
+    { name: 'Rainbow', color: 'linear-gradient(90deg,#ff6b6b,#ffd166,#4de1ff,#b18cff)' },
+  ],
+};
+
+const services = [
+  { icon: 'fas fa-code', title: 'Custom Software', text: 'Reliable applications and backends built around your exact needs, from first prototype to production.' },
+  { icon: 'fas fa-mobile-screen', title: 'Cross-platform Apps', text: 'One codebase, every platform. Native-feeling apps for desktop, iOS and Android with Flutter.' },
+  { icon: 'fas fa-server', title: 'Servers & Infrastructure', text: 'Minecraft plugins, hosting and scalable infrastructure for communities and networks.' },
+  { icon: 'fas fa-robot', title: 'Bots & Automation', text: 'Discord bots, integrations and automation that save your team hours every week.' },
+];
+
+const stats = [
+  { value: '4', label: 'Platforms supported' },
+  { value: '16', label: 'Languages' },
+  { value: '100%', label: 'Free to use' },
+];
+
+const navLinks = [
+  { label: 'MCCompanion', href: '#mccompanion' },
+  { label: 'Brick Break', href: '#brickbreak' },
+  { label: 'Services', href: '#services' },
+  { label: 'Work', href: '#work' },
+  { label: 'About', href: '#about' },
+];
+
+function Eyebrow({ children }) {
+  return (
+    <span className="inline-block text-xs font-semibold uppercase tracking-[0.18em] text-blue-600 mb-3">
+      {children}
+    </span>
+  );
+}
+
+function SectionHeading({ eyebrow, title, subtitle, center = true }) {
+  return (
+    <div className={`max-w-2xl mb-14 ${center ? 'mx-auto text-center' : ''}`} data-reveal>
+      {eyebrow && <Eyebrow>{eyebrow}</Eyebrow>}
+      <h2 className="font-display text-3xl sm:text-4xl font-bold text-slate-900">{title}</h2>
+      {subtitle && <p className="mt-4 text-slate-500 leading-relaxed text-lg">{subtitle}</p>}
+    </div>
+  );
+}
+
+function RepoCard({ repo, badge }) {
+  return (
+    <a
+      href={repo.url}
+      target="_blank"
+      rel="noopener noreferrer"
+      className="card rounded-2xl border border-slate-200 bg-white p-6 flex flex-col group"
+    >
+      <div className="flex items-start justify-between gap-3 mb-2">
+        <h3 className="font-display text-lg font-semibold text-slate-900 group-hover:text-blue-600 transition">
+          {repo.name}
+        </h3>
+        <i className="fas fa-arrow-right text-slate-300 group-hover:text-blue-500 group-hover:translate-x-0.5 transition text-sm mt-1.5" />
+      </div>
+      <p className="text-sm text-slate-500 leading-relaxed flex-1">{repo.description}</p>
+      <div className="flex flex-wrap items-center gap-2 mt-5 text-xs">
+        {badge && (
+          <span className="px-2.5 py-1 rounded-full bg-blue-50 text-blue-700 font-medium">{badge}</span>
+        )}
+        {repo.language && (
+          <span className="px-2.5 py-1 rounded-full bg-slate-100 text-slate-600 font-medium">{repo.language}</span>
+        )}
+        <span className="text-slate-400 flex items-center gap-1 ml-auto">
+          <i className="fas fa-star text-amber-400" /> {repo.stars}
+        </span>
+      </div>
+    </a>
+  );
+}
+
+
 function App() {
-  const [projects, setProjects] = useState([]);
-  const [orgs, setOrgs] = useState([]);
-  const [orgRepos, setOrgRepos] = useState([]);
-  const [avatar, setAvatar] = useState('');
-  const [bio, setBio] = useState('');
+  const [repos, setRepos] = useState([]);
   const [loading, setLoading] = useState(true);
 
-  const business = {
-    name: "Jens Collaert IT Services",
-    address: "Statiestraat 26, 1570 Pajottegem, België",
-    kbo: "1025.363.838", 
-    phone: "+32 472 45 25 11",
-    email: "jens.collaert@hotmail.com"
-  };
-
   useEffect(() => {
-    const fetchProjects = async () => {
-      const response = await fetch('https://api.github.com/users/Jens-Co/repos?sort=pushed&direction=desc&per_page=12');
-      const data = await response.json();
-      const projectsWithCommits = await Promise.all(
-        data.filter(repo => !repo.fork).map(async repo => {
-          try {
-            const commitsRes = await fetch(`https://api.github.com/repos/${repo.full_name}/commits?per_page=1`);
-            const commits = await commitsRes.json();
-            return {
-              id: repo.id,
-              name: repo.name,
-              description: repo.description || 'No description provided',
-              url: repo.html_url,
-              language: repo.language,
-              lastCommit: commits[0]?.commit?.message,
-              lastCommitDate: commits[0]?.commit?.committer?.date,
-              stars: repo.stargazers_count,
-              forks: repo.forks_count,
-            };
-          } catch {
-            return {
-              id: repo.id,
-              name: repo.name,
-              description: repo.description || 'No description provided',
-              url: repo.html_url,
-              language: repo.language,
-              lastCommit: null,
-              lastCommitDate: null,
-              stars: repo.stargazers_count,
-              forks: repo.forks_count,
-            };
-          }
-        })
-      );
-      setProjects(projectsWithCommits);
-    };
-
-    const fetchOrgs = async () => {
-      const response = await fetch('https://api.github.com/users/Jens-Co/orgs?per_page=100');
-      const data = await response.json();
-      setOrgs(
-        data.map(org => ({
-          id: org.id,
-          login: org.login,
-          description: org.description || '',
-          url: org.html_url,
-          avatar: org.avatar_url,
-        }))
-      );
-      return data.map(org => org.login);
-    };
-
-    const fetchOrgRepos = async (orgLogins) => {
-      let allRepos = [];
-      for (const org of orgLogins) {
-        const res = await fetch(`https://api.github.com/orgs/${org}/repos?sort=pushed&direction=desc&per_page=6`);
-        const data = await res.json();
-        allRepos = allRepos.concat(
-          data.map(repo => ({
-            id: repo.id,
-            name: repo.name,
-            description: repo.description || 'No description provided',
-            url: repo.html_url,
-            language: repo.language,
-            org: org,
-            stars: repo.stargazers_count,
-            forks: repo.forks_count,
-            lastCommitDate: repo.pushed_at,
-          }))
-        );
-      }
-      setOrgRepos(allRepos);
-    };
-
-    const fetchProfile = async () => {
-      const response = await fetch('https://api.github.com/users/Jens-Co');
-      const data = await response.json();
-      setAvatar(data.avatar_url);
-      setBio(data.bio || 'Minecraft/Java/Python developer');
-    };
-
     (async () => {
-      await fetchProjects();
-      const orgLogins = await fetchOrgs();
-      await fetchOrgRepos(orgLogins);
-      await fetchProfile();
-      setLoading(false);
+      try {
+        const norm = (r) => ({
+          id: r.id,
+          name: r.name,
+          description: r.description || 'No description provided.',
+          url: r.html_url,
+          language: r.language,
+          stars: r.stargazers_count,
+          pushed: r.pushed_at,
+          owner: r.owner?.login,
+        });
+
+        const [orgRes, userRes] = await Promise.all([
+          fetch('https://api.github.com/orgs/MCCORG/repos?sort=pushed&per_page=20'),
+          fetch('https://api.github.com/users/Jens-Co/repos?sort=pushed&per_page=20'),
+        ]);
+        const orgData = (await orgRes.json()).map(norm);
+        const userData = (await userRes.json()).filter((r) => !r.fork).map(norm);
+
+        const merged = [...orgData, ...userData]
+          .filter((r) => r.name !== '.github')
+          .sort((a, b) => new Date(b.pushed) - new Date(a.pushed))
+          .slice(0, 6);
+        setRepos(merged);
+      } catch {
+      } finally {
+        setLoading(false);
+      }
     })();
   }, []);
 
-  const skills = [
-    { name: 'Java', icon: '☕' },
-    { name: 'Python', icon: '🐍' },
-    { name: 'Minecraft Plugins', icon: '🟩' },
-    { name: 'Node.js', icon: '🟢' },
-    { name: 'React', icon: '⚛️' },
-    { name: 'Linux', icon: '🐧' },
-    { name: 'Docker', icon: '🐳' },
-  ];
-
-  const socials = [
-    { name: 'GitHub', url: 'https://github.com/Jens-Co', icon: 'fab fa-github' },
-    { name: 'LinkedIn', url: 'https://be.linkedin.com/in/jens-collaert-a02525137', icon: 'fab fa-linkedin' },
-  ];
+  useEffect(() => {
+    document.documentElement.classList.add('js');
+    const els = document.querySelectorAll('[data-reveal]');
+    const io = new IntersectionObserver(
+      (entries) => {
+        entries.forEach((e) => {
+          if (e.isIntersecting) {
+            e.target.classList.add('in');
+            io.unobserve(e.target);
+          }
+        });
+      },
+      { threshold: 0.12 }
+    );
+    els.forEach((el) => io.observe(el));
+    const safety = setTimeout(() => els.forEach((el) => el.classList.add('in')), 2000);
+    return () => {
+      io.disconnect();
+      clearTimeout(safety);
+    };
+  }, [repos]);
 
   return (
-    <div className="min-h-screen bg-gray-50 font-sans flex flex-col">
-      <nav className="bg-white shadow-sm sticky top-0 z-10 border-b border-gray-200">
-        <div className="max-w-5xl mx-auto px-4 flex justify-between items-center py-3">
-          <div className="flex items-center gap-3">
-            {avatar && (
-              <img src={avatar} alt="Jens Collaert" className="w-9 h-9 rounded-full border border-gray-300" />
-            )}
-            <h1 className="text-xl font-bold text-gray-900">Jens Collaert</h1>
+    <div className="min-h-screen flex flex-col">
+      <nav className="sticky top-0 z-50 border-b border-slate-200/70 bg-white/85 backdrop-blur-md">
+        <div className="max-w-6xl mx-auto px-5 flex items-center justify-between h-16">
+          <a href="#top" className="flex items-center gap-2.5">
+            <span className="w-9 h-9 rounded-lg bg-slate-900 flex items-center justify-center font-display font-bold text-white text-sm">
+              JC
+            </span>
+            <span className="font-display font-semibold text-slate-900">{business.shortName}</span>
+          </a>
+          <div className="hidden md:flex items-center gap-8 text-sm font-medium">
+            {navLinks.map((l) => (
+              <a key={l.href} href={l.href} className="text-slate-600 hover:text-slate-900 transition">
+                {l.label}
+              </a>
+            ))}
           </div>
-          <div className="space-x-6 hidden sm:block">
-            <a href="#home" className="text-gray-600 hover:text-blue-700 transition">Home</a>
-            <a href="#skills" className="text-gray-600 hover:text-blue-700 transition">Skills</a>
-            <a href="#projects" className="text-gray-600 hover:text-blue-700 transition">Projects</a>
-            <a href="#orgs" className="text-gray-600 hover:text-blue-700 transition">Organizations</a>
-          </div>
+          <a
+            href="#contact"
+            className="text-sm font-semibold px-4 py-2 rounded-lg bg-slate-900 text-white hover:bg-slate-700 transition"
+          >
+            Contact
+          </a>
         </div>
       </nav>
 
-      <main className="flex-1">
-        <section id="home" className="py-12 bg-white border-b border-gray-200">
-          <div className="max-w-3xl mx-auto px-6 text-center">
-            {avatar && (
-              <img src={avatar} alt="Jens Collaert" className="mx-auto w-28 h-28 rounded-full border-2 border-blue-200 mb-6 shadow-sm" />
-            )}
-            <h2 className="text-3xl font-extrabold mb-2 tracking-tight text-gray-900">Jens Collaert</h2>
-            <p className="text-lg mb-4 text-gray-700">{bio}</p>
-            <div className="flex justify-center gap-4 mb-4">
-              {socials.map(s => (
-                <a
-                  key={s.name}
-                  href={s.url}
-                  target="_blank"
-                  rel="noopener noreferrer"
-                  className="text-2xl text-gray-500 hover:text-blue-600 transition"
-                  title={s.name}
-                >
-                  <i className={s.icon}></i>
-                </a>
-              ))}
-            </div>
-            <a href="#projects" className="inline-block bg-blue-50 text-blue-700 px-7 py-2 rounded font-semibold shadow hover:bg-blue-100 transition mt-2">Bekijk projecten</a>
-          </div>
-        </section>
-
-        <section id="business" className="py-6 bg-gray-50 border-b border-gray-200">
-          <div className="max-w-3xl mx-auto px-6 text-center">
-            <h3 className="text-xl font-bold text-gray-900 mb-2">Bedrijfsgegevens</h3>
-            <div className="text-gray-700 mb-1">{business.name}</div>
-            <div className="text-gray-700 mb-1">Adres: {business.address}</div>
-            <div className="text-gray-700 mb-1">KBO: {business.kbo}</div>
-            <div className="text-gray-700 mb-1">Tel: <a href={`tel:${business.phone}`} className="text-blue-700 hover:underline">{business.phone}</a></div>
-            <div className="text-gray-700 mb-1">E-mail: <a href={`mailto:${business.email}`} className="text-blue-700 hover:underline">{business.email}</a></div>
-          </div>
-        </section>
-
-        <section id="skills" className="py-10 bg-gray-50">
-          <div className="max-w-4xl mx-auto px-6">
-            <h2 className="text-2xl font-bold text-gray-900 mb-7 text-center">Skills & Tech Stack</h2>
-            <div className="flex flex-wrap justify-center gap-4">
-              {skills.map(skill => (
-                <span key={skill.name} className="bg-white border border-gray-200 text-blue-700 px-5 py-2 rounded text-base font-medium flex items-center gap-2 shadow hover:bg-blue-50 transition">
-                  <span>{skill.icon}</span> {skill.name}
-                </span>
-              ))}
+      <main id="top" className="flex-1">
+        <section className="relative overflow-hidden">
+          <div
+            className="absolute inset-0 -z-10"
+            style={{
+              background:
+                'radial-gradient(60% 55% at 50% 0%, rgba(37,99,235,0.10) 0%, rgba(255,255,255,0) 70%)',
+            }}
+          />
+          <div className="max-w-4xl mx-auto px-5 pt-24 pb-20 text-center">
+            <span
+              className="inline-flex items-center gap-2 text-xs font-medium px-3 py-1.5 rounded-full border border-slate-200 bg-white text-slate-600 mb-7"
+              data-reveal
+            >
+              <span className="w-1.5 h-1.5 rounded-full bg-emerald-500" />
+              Independent software company · Belgium
+            </span>
+            <h1
+              className="font-display text-4xl sm:text-6xl font-bold text-slate-900 leading-[1.06]"
+              data-reveal
+            >
+              Software that people
+              <br className="hidden sm:block" /> actually{' '}
+              <span className="text-blue-600">use every day.</span>
+            </h1>
+            <p className="mt-6 text-lg sm:text-xl text-slate-500 max-w-2xl mx-auto leading-relaxed" data-reveal>
+              {business.name} designs, builds and runs software end to end, from cross-platform apps to
+              server infrastructure. Home of <span className="font-semibold text-slate-700">MCCompanion</span>,
+              the free Minecraft companion app, and the upcoming game{' '}
+              <span className="font-semibold text-slate-700">Brick Break Swipe</span>.
+            </p>
+            <div className="mt-9 flex flex-wrap items-center justify-center gap-3" data-reveal>
+              <a
+                href="#mccompanion"
+                className="px-6 py-3 rounded-xl font-semibold text-white bg-blue-600 hover:bg-blue-700 shadow-sm hover:shadow-md hover:-translate-y-0.5 transition"
+              >
+                Discover MCCompanion
+              </a>
+              <a
+                href="#contact"
+                className="px-6 py-3 rounded-xl font-semibold text-slate-900 border border-slate-200 bg-white hover:bg-slate-50 transition"
+              >
+                Work with me
+              </a>
             </div>
           </div>
         </section>
 
-        <section id="projects" className="py-14 bg-white border-t border-gray-100">
-          <div className="max-w-6xl mx-auto px-4">
-            <h2 className="text-2xl font-bold text-gray-900 mb-7 text-center">My Latest Projects</h2>
-            {loading ? (
-              <div className="text-center text-gray-500">Loading projects...</div>
-            ) : (
-              <div className="overflow-x-auto">
-                <div className="flex gap-6 pb-4" style={{ minWidth: '600px' }}>
-                  {projects.map(project => (
-                    <div key={project.id} className="bg-white rounded-lg border border-gray-200 shadow-sm p-6 min-w-[300px] flex flex-col justify-between hover:shadow-md transition">
-                      <div>
-                        <h3 className="text-lg font-semibold mb-2 text-blue-700">{project.name}</h3>
-                        <p className="text-gray-600 mb-3">{project.description}</p>
-                        <div className="flex flex-wrap gap-3 text-xs text-gray-400 mb-2">
-                          {project.language && <span className="bg-blue-50 text-blue-700 px-2 py-1 rounded">{project.language}</span>}
-                          <span title="Stars">⭐ {project.stars}</span>
-                          <span title="Forks">🍴 {project.forks}</span>
-                        </div>
-                      </div>
-                      <div className="mt-2 text-xs text-gray-400">
-                        {project.lastCommit && (
-                          <span>
-                            Last commit: <span className="text-gray-600">{project.lastCommit.slice(0, 40)}{project.lastCommit.length > 40 ? '...' : ''}</span><br />
-                            <span className="text-gray-500">{project.lastCommitDate && new Date(project.lastCommitDate).toLocaleDateString()}</span>
-                          </span>
-                        )}
-                      </div>
-                      <a href={project.url} target="_blank" rel="noopener noreferrer" className="mt-4 text-blue-600 hover:text-blue-800 font-medium block text-right">View on GitHub →</a>
-                    </div>
+        <section id="mccompanion" className="py-24 px-5 bg-slate-50 border-y border-slate-200">
+          <div className="max-w-6xl mx-auto">
+            <div className="grid lg:grid-cols-2 gap-12 items-center mb-16">
+              <div data-reveal>
+                <Eyebrow>Flagship product</Eyebrow>
+                <h2 className="font-display text-3xl sm:text-4xl font-bold text-slate-900">
+                  MCCompanion
+                </h2>
+                <p className="mt-3 text-lg font-medium text-slate-700">
+                  Your Minecraft companion. On every platform.
+                </p>
+                <p className="mt-4 text-slate-500 leading-relaxed">
+                  A polished, 100% free companion app for the Minecraft community, packed with tools for
+                  players and server owners alike, available on desktop and mobile in 16 languages.
+                </p>
+                <div className="flex flex-wrap gap-2 mt-6">
+                  {mcc.platforms.map((p) => (
+                    <span
+                      key={p.name}
+                      className="inline-flex items-center gap-2 text-sm px-3 py-1.5 rounded-lg border border-slate-200 bg-white text-slate-700"
+                    >
+                      <i className={p.icon} /> {p.name}
+                    </span>
                   ))}
                 </div>
-              </div>
-            )}
-          </div>
-        </section>
-
-        <section id="org-projects" className="py-14 bg-gray-50 border-t border-gray-100">
-          <div className="max-w-6xl mx-auto px-4">
-            <h2 className="text-2xl font-bold text-gray-900 mb-7 text-center">Latest Organization Projects</h2>
-            {loading ? (
-              <div className="text-center text-gray-500">Loading organization repos...</div>
-            ) : (
-              <div className="overflow-x-auto">
-                <div className="flex gap-6 pb-4" style={{ minWidth: '600px' }}>
-                  {orgRepos.map(repo => (
-                    <div key={repo.id} className="bg-white rounded-lg border border-gray-200 shadow-sm p-6 min-w-[300px] flex flex-col justify-between hover:shadow-md transition">
-                      <div>
-                        <h3 className="text-lg font-semibold mb-2 text-blue-700">{repo.name}</h3>
-                        <p className="text-gray-600 mb-3">{repo.description}</p>
-                        <div className="flex flex-wrap gap-3 text-xs text-gray-400 mb-2">
-                          <span className="bg-blue-50 text-blue-700 px-2 py-1 rounded">{repo.org}</span>
-                          {repo.language && <span className="bg-blue-50 text-blue-700 px-2 py-1 rounded">{repo.language}</span>}
-                          <span title="Stars">⭐ {repo.stars}</span>
-                          <span title="Forks">🍴 {repo.forks}</span>
-                        </div>
-                      </div>
-                      <div className="mt-2 text-xs text-gray-400">
-                        {repo.lastCommitDate && (
-                          <span>
-                            Last update: <span className="text-gray-600">{new Date(repo.lastCommitDate).toLocaleDateString()}</span>
-                          </span>
-                        )}
-                      </div>
-                      <a href={repo.url} target="_blank" rel="noopener noreferrer" className="mt-4 text-blue-600 hover:text-blue-800 font-medium block text-right">View on GitHub →</a>
-                    </div>
-                  ))}
+                <div className="mt-8 flex flex-wrap gap-3">
+                  <a
+                    href={mcc.url}
+                    target="_blank"
+                    rel="noopener noreferrer"
+                    className="px-6 py-3 rounded-xl font-semibold text-white bg-slate-900 hover:bg-slate-700 transition"
+                  >
+                    Visit mccompanion.net <i className="fas fa-arrow-up-right-from-square ml-1.5 text-xs" />
+                  </a>
+                  <a
+                    href="https://github.com/MCCORG"
+                    target="_blank"
+                    rel="noopener noreferrer"
+                    className="px-6 py-3 rounded-xl font-semibold text-slate-900 border border-slate-200 bg-white hover:bg-slate-50 transition"
+                  >
+                    <i className="fab fa-github mr-1.5" /> Source
+                  </a>
                 </div>
+                <p className="mt-5 text-sm text-slate-400">
+                  <i className="fas fa-user-pen mr-1.5" />
+                  Created &amp; maintained by <span className="font-medium text-slate-600">Jens Collaert</span>.
+                </p>
               </div>
-            )}
-          </div>
-        </section>
 
-        <section id="orgs" className="py-12 bg-gray-50">
-          <div className="max-w-5xl mx-auto px-4">
-            <h2 className="text-2xl font-bold text-gray-900 mb-7 text-center">Organizations</h2>
-            {loading ? (
-              <div className="text-center text-gray-500">Loading organizations...</div>
-            ) : (
-              <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
-                {orgs.map(org => (
-                  <div key={org.id} className="bg-white rounded-lg border border-gray-200 shadow-sm p-6 flex gap-6 items-center hover:shadow-md transition">
-                    <img src={org.avatar} alt={org.login} className="w-12 h-12 rounded-full border border-blue-100" />
-                    <div>
-                      <h3 className="text-lg font-semibold mb-1 text-blue-700">{org.login}</h3>
-                      {org.description && <p className="text-gray-600 mb-2">{org.description}</p>}
-                      <a href={org.url} target="_blank" rel="noopener noreferrer" className="text-blue-600 hover:text-blue-800 font-medium">Visit Organization →</a>
+              <div className="grid grid-cols-3 gap-4" data-reveal>
+                {stats.map((s) => (
+                  <div
+                    key={s.label}
+                    className="rounded-2xl border border-slate-200 bg-white p-6 text-center"
+                  >
+                    <div className="font-display text-3xl sm:text-4xl font-bold text-blue-600">
+                      {s.value}
                     </div>
+                    <div className="mt-2 text-xs sm:text-sm text-slate-500 leading-snug">{s.label}</div>
                   </div>
+                ))}
+              </div>
+            </div>
+
+            <div className="grid sm:grid-cols-2 lg:grid-cols-3 gap-5">
+              {mcc.features.map((f) => (
+                <div key={f.title} className="card rounded-2xl border border-slate-200 bg-white p-6" data-reveal>
+                  <div className="w-11 h-11 rounded-xl bg-blue-50 flex items-center justify-center text-blue-600 text-lg mb-4">
+                    <i className={f.icon} />
+                  </div>
+                  <h3 className="font-display text-base font-semibold text-slate-900 mb-1.5">{f.title}</h3>
+                  <p className="text-sm text-slate-500 leading-relaxed">{f.text}</p>
+                </div>
+              ))}
+            </div>
+          </div>
+        </section>
+
+        <section id="brickbreak" className="py-24 px-5 bg-slate-950 text-white relative overflow-hidden">
+          <div
+            className="absolute inset-0 pointer-events-none"
+            style={{
+              background:
+                'radial-gradient(45% 40% at 15% 0%, rgba(37,99,235,0.22) 0%, rgba(2,6,23,0) 70%), radial-gradient(45% 40% at 90% 20%, rgba(37,99,235,0.14) 0%, rgba(2,6,23,0) 70%)',
+            }}
+          />
+          <div className="max-w-6xl mx-auto relative">
+            <div className="grid lg:grid-cols-2 gap-10 items-center mb-14">
+              <div data-reveal>
+                <span className="inline-flex items-center gap-2 text-xs font-semibold uppercase tracking-[0.18em] text-blue-300 mb-3">
+                  <span className="w-2 h-2 rounded-full bg-blue-400 animate-pulse" />
+                  {brickBreak.status} · Game
+                </span>
+                <h2 className="font-display text-3xl sm:text-5xl font-bold">{brickBreak.name}</h2>
+                <p className="mt-4 text-xl font-medium text-slate-200">{brickBreak.tagline}</p>
+                <p className="mt-4 text-slate-400 leading-relaxed max-w-xl">{brickBreak.description}</p>
+                <div className="flex flex-wrap gap-2 mt-6">
+                  {brickBreak.platforms.map((p) => (
+                    <span
+                      key={p.name}
+                      className="inline-flex items-center gap-2 text-sm px-3 py-1.5 rounded-lg bg-white/5 border border-white/10 text-slate-200"
+                    >
+                      <i className={p.icon} /> {p.name}
+                    </span>
+                  ))}
+                  <span className="inline-flex items-center gap-2 text-sm px-3 py-1.5 rounded-lg bg-white/5 border border-white/10 text-slate-200">
+                    <i className="fas fa-feather-pointed" /> Flutter · Flame
+                  </span>
+                </div>
+                <p className="mt-6 text-sm text-slate-400">
+                  <i className="fas fa-user-pen mr-1.5" />
+                  A new game by <span className="font-medium text-slate-200">Jens Collaert</span>.
+                </p>
+              </div>
+
+              <div className="rounded-3xl bg-white/[0.04] border border-white/10 p-8" data-reveal>
+                <div className="grid grid-cols-3 gap-4 text-center">
+                  {brickBreak.stats.map((s) => (
+                    <div key={s.label}>
+                      <div className="font-display text-3xl sm:text-4xl font-bold text-blue-300">
+                        {s.value}
+                      </div>
+                      <div className="mt-1.5 text-xs text-slate-400 leading-snug">{s.label}</div>
+                    </div>
+                  ))}
+                </div>
+                <div className="mt-8 pt-6 border-t border-white/10">
+                  <div className="text-xs uppercase tracking-[0.15em] text-slate-500 mb-3">Ball skins</div>
+                  <div className="flex flex-wrap items-center gap-3">
+                    {brickBreak.skins.map((s) => (
+                      <div key={s.name} className="flex items-center gap-2" title={s.name}>
+                        <span
+                          className="w-7 h-7 rounded-full border border-white/20 shadow-inner"
+                          style={{ background: s.color }}
+                        />
+                        <span className="text-sm text-slate-300">{s.name}</span>
+                      </div>
+                    ))}
+                  </div>
+                </div>
+              </div>
+            </div>
+
+            <div className="grid sm:grid-cols-2 lg:grid-cols-3 gap-4">
+              {brickBreak.features.map((f) => (
+                <div
+                  key={f.title}
+                  className="rounded-2xl bg-white/[0.04] border border-white/10 p-6 hover:bg-white/[0.07] hover:border-white/20 transition"
+                  data-reveal
+                >
+                  <div className="w-11 h-11 rounded-xl bg-blue-500/15 border border-white/10 flex items-center justify-center text-blue-300 text-lg mb-4">
+                    <i className={f.icon} />
+                  </div>
+                  <h3 className="font-display text-base font-semibold text-white mb-1.5">{f.title}</h3>
+                  <p className="text-sm text-slate-400 leading-relaxed">{f.text}</p>
+                </div>
+              ))}
+            </div>
+          </div>
+        </section>
+
+        <section id="services" className="py-24 px-5">
+          <div className="max-w-6xl mx-auto">
+            <SectionHeading
+              eyebrow="What I do"
+              title="Services"
+              subtitle="Beyond our own products, I take client projects from idea to shipped software, then keep them running."
+            />
+            <div className="grid sm:grid-cols-2 gap-5">
+              {services.map((s) => (
+                <div
+                  key={s.title}
+                  className="card rounded-2xl border border-slate-200 bg-white p-7 flex gap-5"
+                  data-reveal
+                >
+                  <div className="shrink-0 w-12 h-12 rounded-xl bg-slate-900 flex items-center justify-center text-white text-lg">
+                    <i className={s.icon} />
+                  </div>
+                  <div>
+                    <h3 className="font-display text-lg font-semibold text-slate-900 mb-1.5">{s.title}</h3>
+                    <p className="text-sm text-slate-500 leading-relaxed">{s.text}</p>
+                  </div>
+                </div>
+              ))}
+            </div>
+          </div>
+        </section>
+
+        <section id="work" className="py-24 px-5 bg-slate-50 border-y border-slate-200">
+          <div className="max-w-6xl mx-auto">
+            <SectionHeading
+              eyebrow="Open source"
+              title="Selected work"
+              subtitle="A live look at what we've been building lately, straight from GitHub."
+            />
+            {loading ? (
+              <div className="text-center text-slate-400">Loading projects…</div>
+            ) : repos.length === 0 ? (
+              <div className="text-center text-slate-500">
+                See everything on{' '}
+                <a href="https://github.com/MCCORG" className="text-blue-600 font-medium hover:underline">
+                  GitHub
+                </a>
+                .
+              </div>
+            ) : (
+              <div className="grid sm:grid-cols-2 lg:grid-cols-3 gap-5">
+                {repos.map((r) => (
+                  <RepoCard key={r.id} repo={r} badge={r.owner === 'MCCORG' ? 'MCCompanion' : undefined} />
                 ))}
               </div>
             )}
           </div>
         </section>
+
+        <section id="about" className="py-24 px-5">
+          <div className="max-w-3xl mx-auto text-center" data-reveal>
+            <Eyebrow>About</Eyebrow>
+            <h2 className="font-display text-3xl sm:text-4xl font-bold text-slate-900">
+              A one-person studio with a product mindset
+            </h2>
+            <p className="mt-5 text-lg text-slate-500 leading-relaxed">
+              {business.name} is an independent software company based in Pajottegem, Belgium. I build
+              software the same way I build products: shipped, maintained and genuinely useful. Whether it's
+              a companion app for a global community or a tailored tool for a single client, I handle it end
+              to end: design, development and operations.
+            </p>
+            <div className="mt-8 inline-flex flex-wrap items-center justify-center gap-x-6 gap-y-2 text-sm text-slate-500">
+              <span><i className="fas fa-location-dot mr-2 text-blue-500" />Pajottegem, België</span>
+              <span><i className="fas fa-building mr-2 text-blue-500" />KBO {business.kbo}</span>
+            </div>
+          </div>
+        </section>
+
+        <section id="contact" className="pb-24 px-5">
+          <div className="max-w-5xl mx-auto">
+            <div className="rounded-3xl bg-slate-900 px-8 py-14 sm:px-14 text-center relative overflow-hidden" data-reveal>
+              <div
+                className="absolute inset-0"
+                style={{ background: 'radial-gradient(50% 60% at 50% 0%, rgba(37,99,235,0.35) 0%, rgba(15,23,42,0) 70%)' }}
+              />
+              <div className="relative">
+                <h2 className="font-display text-3xl sm:text-4xl font-bold text-white">
+                  Let's build something great.
+                </h2>
+                <p className="mt-4 text-slate-300 max-w-lg mx-auto">
+                  Have a product idea, a project or a Minecraft network that needs a hand? I'd love to hear
+                  about it.
+                </p>
+                <div className="mt-8 flex flex-wrap items-center justify-center gap-3">
+                  <a
+                    href={`mailto:${business.email}`}
+                    className="px-6 py-3 rounded-xl font-semibold text-slate-900 bg-white hover:bg-slate-100 transition"
+                  >
+                    <i className="fas fa-envelope mr-2" /> {business.email}
+                  </a>
+                  <a
+                    href={`tel:${business.phone}`}
+                    className="px-6 py-3 rounded-xl font-semibold text-white border border-white/25 hover:bg-white/10 transition"
+                  >
+                    <i className="fas fa-phone mr-2" /> {business.phone}
+                  </a>
+                </div>
+              </div>
+            </div>
+          </div>
+        </section>
       </main>
 
-      <footer className="bg-gray-900 text-white py-6 mt-16">
-        <div className="max-w-5xl mx-auto px-4 text-center">
-          <div className="mb-2">
-            {socials.map(s => (
-              <a key={s.name} href={s.url} target="_blank" rel="noopener noreferrer" className="mx-2 text-xl text-white hover:text-blue-400 transition">
-                <i className={s.icon}></i>
-              </a>
-            ))}
+      <footer className="border-t border-slate-200 py-12 px-5">
+        <div className="max-w-6xl mx-auto">
+          <div className="flex flex-col md:flex-row items-center justify-between gap-6">
+            <div className="flex items-center gap-2.5">
+              <span className="w-9 h-9 rounded-lg bg-slate-900 flex items-center justify-center font-display font-bold text-white text-sm">
+                JC
+              </span>
+              <span className="font-display font-semibold text-slate-900">{business.name}</span>
+            </div>
+            <div className="flex items-center gap-3">
+              {socials.map((s) => (
+                <a
+                  key={s.name}
+                  href={s.url}
+                  target="_blank"
+                  rel="noopener noreferrer"
+                  title={s.name}
+                  className="w-9 h-9 rounded-full border border-slate-200 flex items-center justify-center text-slate-500 hover:text-slate-900 hover:border-slate-300 transition"
+                >
+                  <i className={s.icon} />
+                </a>
+              ))}
+            </div>
           </div>
-          <div className="mb-2 text-gray-300 text-sm">
-            {business.name} | {business.address} | KBO: {business.kbo} | Tel: <a href={`tel:${business.phone}`} className="text-blue-300">{business.phone}</a> | E-mail: <a href={`mailto:${business.email}`} className="text-blue-300">{business.email}</a>
+          <div className="mt-8 pt-8 border-t border-slate-200 flex flex-col sm:flex-row items-center justify-between gap-3 text-sm text-slate-400">
+            <p>{business.address} · KBO {business.kbo}</p>
+            <p>© {new Date().getFullYear()} {business.name}. All rights reserved.</p>
           </div>
-          <p>© 2025 Jens Collaert. All rights reserved.</p>
         </div>
       </footer>
-
-      <link
-        rel="stylesheet"
-        href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css"
-      />
     </div>
   );
 }
