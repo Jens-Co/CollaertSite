@@ -47,3 +47,26 @@ body {
 @media (prefers-reduced-motion: reduce) {
   .js [data-reveal] { opacity: 1; transform: none; }
 }
+
+/* Legal pages (Privacy / Terms) - readable prose from raw tags. */
+.legal-prose h2 {
+  font-family: 'Plus Jakarta Sans', 'Inter', ui-sans-serif, system-ui, sans-serif;
+  letter-spacing: -0.025em;
+  font-size: 1.25rem;
+  font-weight: 700;
+  color: #0f172a;
+  margin: 2.2rem 0 0.6rem;
+}
+.legal-prose h3 {
+  font-family: 'Plus Jakarta Sans', 'Inter', ui-sans-serif, system-ui, sans-serif;
+  font-size: 1.05rem;
+  font-weight: 600;
+  color: #0f172a;
+  margin: 1.5rem 0 0.4rem;
+}
+.legal-prose p { margin: 0 0 1rem; }
+.legal-prose ul { margin: 0 0 1rem; padding-left: 1.25rem; list-style: disc; }
+.legal-prose li { margin: 0.3rem 0; }
+.legal-prose strong { color: #0f172a; font-weight: 600; }
+.legal-prose a { color: #2563eb; }
+.legal-prose a:hover { text-decoration: underline; }

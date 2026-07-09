@@ -383,6 +383,20 @@ function App() {
                   <i className="fas fa-user-pen mr-1.5" />
                   A new game by <span className="font-medium text-slate-200">Jens Collaert</span>.
                 </p>
+                <div className="mt-4 flex items-center gap-4 text-sm">
+                  <a
+                    href="#/brickbreak/privacy"
+                    className="text-slate-400 hover:text-blue-300 transition"
+                  >
+                    <i className="fas fa-shield-halved mr-1.5" />Privacy Policy
+                  </a>
+                  <a
+                    href="#/brickbreak/terms"
+                    className="text-slate-400 hover:text-blue-300 transition"
+                  >
+                    <i className="fas fa-file-contract mr-1.5" />Terms of Service
+                  </a>
+                </div>
               </div>
 
               <div className="rounded-3xl bg-white/[0.04] border border-white/10 p-8" data-reveal>
