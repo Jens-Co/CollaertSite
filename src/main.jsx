@@ -3,9 +3,6 @@ import { createRoot } from 'react-dom/client';
 import App from './App.jsx';
 import { Privacy, Terms } from './pages/Legal.jsx';
 
-// Tiny hash-based routing (no dependency, gh-pages friendly). The main site
-// uses in-page anchors like #brickbreak; the legal pages live under the
-// #/brickbreak/... prefix so the two never collide.
 function Root() {
   const [hash, setHash] = useState(window.location.hash);
   useEffect(() => {
